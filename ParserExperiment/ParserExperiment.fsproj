@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>ParserExperimetnts</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Models.fs" />
+    <Compile Include="Parsers.fsi" />
+    <Compile Include="Parsers.fs" />
+    <Compile Include="Operators.fs" />
+    <Compile Include="Evaluation.fsi" />
+    <Compile Include="Evaluation.fsi" /> 
+    <Compile Include="Evaluation.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" />
+    <Content Include="sample.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FParsec" Version="1.1.1" />
+  </ItemGroup>
+
+</Project>
