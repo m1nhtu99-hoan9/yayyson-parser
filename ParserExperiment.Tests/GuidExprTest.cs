@@ -1,6 +1,6 @@
 using System;
-using FParsec.CSharp;
 using Xunit;
+using static ParserExperiments.Features;
 
 namespace ParserExperiments.Tests
 {
@@ -9,25 +9,19 @@ namespace ParserExperiments.Tests
         [Fact]
         public void ParseNewGuidJsonExpr_ReturnNewGuid()
         {
-            var guidExprString = "${Guid.NewGuid}";
-            var (guidExpr, msg) = Parsers.runPExpr(Parsers.pGuidExpr, "GUID expression", guidExprString)
-                .UnwrapResult();
-            var actualGuid = Evaluation.evalGuidExpr(guidExpr);
+            var actualResult = ParseToGuid("${Guid.NewGuid}");
 
-            Assert.Null(msg);
-            Assert.NotEqual(Guid.Empty, actualGuid);
+            Assert.True(actualResult.IsOk);
+            Assert.NotEqual(Guid.Empty, actualResult.ResultValue);
         }
 
         [Fact]
         public void ParseEmptyGuidExpr_ReturnEmptyGuid()
         {
-            var guidExprString = "${Guid.Empty}";
-            var (guidExpr, msg) = Parsers.runPExpr(Parsers.pGuidExpr, "GUID expression", guidExprString)
-                .UnwrapResult();
-            var actualGuid = Evaluation.evalGuidExpr(guidExpr);
+            var actualResult = ParseToGuid("${Guid.Empty}");
 
-            Assert.Null(msg);
-            Assert.Equal(Guid.Empty, actualGuid);
+            Assert.True(actualResult.IsOk);
+            Assert.Equal(Guid.Empty, actualResult.ResultValue);
         }
 
         [Fact]
@@ -35,12 +29,10 @@ namespace ParserExperiments.Tests
         {
             const string literal = "D0C9CC05-CB74-4732-BEDD-66AD4E03F897";
             var guidExprString = string.Format("${{Guid.Parse {0}}}", literal);
-            var (guidExpr, msg) = Parsers.runPExpr(Parsers.pGuidExpr, "GUID expression", guidExprString)
-                .UnwrapResult();
-            var actualGuid = Evaluation.evalGuidExpr(guidExpr);
+            var actualResult = ParseToGuid(guidExprString);
 
-            Assert.Null(msg);
-            Assert.Equal(Guid.Parse(literal), actualGuid);
+            Assert.True(actualResult.IsOk);
+            Assert.Equal(Guid.Parse(literal), actualResult.ResultValue);
         }
     }
 }
