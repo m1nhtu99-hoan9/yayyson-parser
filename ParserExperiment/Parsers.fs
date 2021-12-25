@@ -81,17 +81,16 @@ let pTimeSpan : Parser<TimeSpan, unit> =
             reply
 
 
-let pGuidExpr : Parser<GuidExpr, unit> = 
-    let _pEmpty = pstring "Empty" >>% GuidExpr.EmptyGuid
-    let _pNew = pstring "NewGuid" >>% GuidExpr.NewGuid
-    let _pValue: Parser<GuidExpr, unit> = 
-        pstring "Parse" 
+let pGuid : Parser<Guid, unit> = 
+    let _pEmpty = pstring "Empty" >>% Guid.Empty
+    let _pNew = pstring "NewGuid" >>% Guid.NewGuid ()
+    let _pValue = ( pstring "Parse" 
         >>. skipChar ' '
         >>. manyCharsTill anyChar eof 
-        |>> Guid.Parse
-        |>> GuidExpr.Value
+        |>> Guid.Parse )
 
     skipString "Guid." >>. choice [ _pEmpty; _pNew; _pValue ] 
+
 
 
 let pIdentifier : Parser<Expr, unit> = many1Chars (letter <|> digit) |>> Expr.Identifer

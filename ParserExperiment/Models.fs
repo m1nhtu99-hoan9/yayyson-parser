@@ -8,11 +8,6 @@ type BinaryOperator =
     | Add 
     | Substract
 
-type GuidExpr = 
-    | NewGuid
-    | EmptyGuid
-    | Value of Guid
-
 type Expr = 
     | IntLiteral of int
     | FloatLiteral of float
@@ -21,4 +16,4 @@ type Expr =
     | TimeSpanLiteral of TimeSpan
     | Identifer of string
     | Binary of (BinaryOperator * Expr * Expr)
-    | GuidLiteral of GuidExpr
+    | GuidLiteral of Guid

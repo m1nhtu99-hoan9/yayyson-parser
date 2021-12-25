@@ -1,18 +1,14 @@
 ﻿module ParserExperiments.Program
 
-open System
-open FParsec
-
-open Models
 open Parsers
-open Evaluation
+open Features
 
 
 let demoGuid (guidExpr: string) = 
     printfn $"\"{guidExpr}\" -> "
-    match runPExpr pGuidExpr "GUID expression" guidExpr with
-    | ParserResult.Success (r, _, _) -> printfn $"\t{evalGuidExpr r}\n"
-    | ParserResult.Failure (msg, _, _) -> printfn $"\tFailed: {msg}"
+    match ParseToGuid guidExpr with
+    | Result.Ok value -> printfn $"\t{value}\n"
+    | Result.Error msg -> printfn $"\tFailed: {msg}"
 
 [<EntryPoint>]
 let main argv =

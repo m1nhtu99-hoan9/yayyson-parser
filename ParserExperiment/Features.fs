@@ -4,12 +4,11 @@ open System
 open FParsec 
 
 open ParserExperiments.Parsers
-open ParserExperiments.Evaluation
 
 
 let ParseToGuid (str: string) = 
-    match runPExpr pGuidExpr "GUID expression" str with 
-    | ParserResult.Success (guidExpr, _, _) -> Result.Ok <| evalGuidExpr guidExpr
+    match runPExpr pGuid "GUID expression" str with 
+    | ParserResult.Success (guid, _, _) -> Result.Ok guid   
     | ParserResult.Failure (msg, _, _) -> Result.Error msg 
 
 

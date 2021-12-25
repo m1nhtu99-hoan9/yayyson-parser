@@ -3,6 +3,3 @@
 open System
 
 open Models
-
-
-val evalGuidExpr: guidExpr: GuidExpr -> Guid

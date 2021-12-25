@@ -5,13 +5,6 @@ open System
 open Models
 
 
-let evalGuidExpr (guidExpr: GuidExpr) = 
-    match guidExpr with
-    | GuidExpr.EmptyGuid -> Guid.Empty
-    | GuidExpr.NewGuid -> Guid.NewGuid ()
-    | GuidExpr.Value v -> v
-
-
 let _evalAdd (expr1: Expr, expr2: Expr) =
     match (expr1, expr2) with
     | (DateTimeLiteral x1, TimeSpanLiteral x2) -> Result.Ok <| x1.Add x2 
