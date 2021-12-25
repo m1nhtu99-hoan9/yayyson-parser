@@ -1,4 +1,4 @@
-name: .NET
+name: DotNet Build & Test
 
 on:
   push:
@@ -10,16 +10,36 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+    - name: Setup DotNet Core SDK 5.0
+      uses: actions/setup-dotnet@v1.9.0
       with:
-        dotnet-version: 3.1.x
+        dotnet-version: '5.0.x'
+    - name: Setup DotNet Core SDK 3.1
+      uses: actions/setup-dotnet@v1.9.0
+      with:
+        dotnet-version: '3.1.x'
+    - uses: actions/cache@v2.1.7
+      with:
+        path: ~/.nuget/packages
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget
+    - name: List available runtimes
+      run: dotnet --list-runtimes
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
+    - name: Upload dotnet test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: dotnet-results-${{ matrix.dotnet-version }}
+        path: TestResults-${{ matrix.dotnet-version }}
+      # Use always() to always run this step to publish test results when there are test failures
+      if: ${{ always() }}

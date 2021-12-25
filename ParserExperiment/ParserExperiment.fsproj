@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>ParserExperimetnts</RootNamespace>
+    <RootNamespace>ParserExperiments</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
