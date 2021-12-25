@@ -2,12 +2,12 @@ using System;
 using Xunit;
 using static ParserExperiments.Features;
 
-namespace ParserExperiments.Tests
+namespace ParserExperiments.Tests.Features
 {
-    public class GuidExprTest
+    public class ParseToGuidTest
     {
         [Fact]
-        public void ParseNewGuidJsonExpr_ReturnNewGuid()
+        public void ParseToGuid_GivenNewGuidJsonExpr_ReturnNewGuid()
         {
             var actualResult = ParseToGuid("${Guid.NewGuid}");
 
@@ -16,7 +16,7 @@ namespace ParserExperiments.Tests
         }
 
         [Fact]
-        public void ParseEmptyGuidExpr_ReturnEmptyGuid()
+        public void ParseToGuid_GivenEmptyGuidExpr_ReturnEmptyGuid()
         {
             var actualResult = ParseToGuid("${Guid.Empty}");
 
@@ -25,14 +25,14 @@ namespace ParserExperiments.Tests
         }
 
         [Fact]
-        public void ParseGuidParseExpr_ReturnExpectedGuid()
+        public void ParseToGuid_GivenGuidParseExpr_ReturnExpectedGuid()
         {
-            const string literal = "D0C9CC05-CB74-4732-BEDD-66AD4E03F897";
-            var guidExprString = string.Format("${{Guid.Parse {0}}}", literal);
+            var expected = Guid.NewGuid();
+            var guidExprString = string.Format("${{Guid.Parse {0}}}", expected.ToString("D"));
             var actualResult = ParseToGuid(guidExprString);
 
             Assert.True(actualResult.IsOk);
-            Assert.Equal(Guid.Parse(literal), actualResult.ResultValue);
+            Assert.Equal(expected, actualResult.ResultValue);
         }
     }
 }

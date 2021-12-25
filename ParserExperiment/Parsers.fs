@@ -5,38 +5,42 @@ open FParsec
 
 open Models
 
+let internal createExprParser<'TResult> (pExprContent: Parser<'TResult, unit>) = 
+    between (skipString "${") (skipChar '}') pExprContent
 
-let runPExpr (pexpr: Parser<'TResult, unit>) (streamName: string) (str: string) = 
-    let pExprContent = skipString "${" >>. manyCharsTill anyChar (skipChar '}')
-    let r0 = run pExprContent str 
-    match r0 with 
-    | ParserResult.Success (exprContent, _, _) -> runParserOnString pexpr () streamName exprContent
-    | ParserResult.Failure (msg, err, _) -> ParserResult.Failure (msg, err, ())
+let internal runExprParser<'TResult> (pExprContent: Parser<'TResult, unit>) (streamName: string) (str: string) = 
+    runParserOnString (createExprParser pExprContent) () streamName str
+
+let internal endOfExprContent = followedBy <| pchar '}' <|> eof    
 
 
-let internal pNumberLiteral : Parser<NumberLiteral, obj> =  
-    let supportedOptions = 
-        NumberLiteralOptions.DefaultFloat 
-        ||| NumberLiteralOptions.DefaultInteger
-    numberLiteral supportedOptions "number"
+let pGuid : Parser<Guid, unit> = 
+    let _pEmpty = pstring "Empty" >>% Guid.Empty
+    let _pNew = pstring "NewGuid" >>% Guid.NewGuid ()
+    let _pValue = ( pstring "Parse" 
+        >>. skipChar ' '
+        >>. manyCharsTill anyChar endOfExprContent
+        |>> Guid.Parse )
 
+    skipString "Guid." >>. choice [ _pEmpty; _pNew; _pValue ] 
 
 
 let private _pTimeSpanPart (partAliases: string) : Parser<(TimeSpan * char option), unit> = 
     fun stream -> 
         if String.IsNullOrWhiteSpace partAliases then
-            let r0 = eof stream            
+            let r0 = stream |> endOfExprContent           
             match r0.Status with
             | ReplyStatus.Ok -> Reply <| (TimeSpan.Zero, None)
             | _ -> Reply (r0.Status, (TimeSpan.Zero, None), r0.Error)
         else
-            if stream.IsEndOfStream then
+            if (stream |> endOfExprContent).Status = ReplyStatus.Ok then
                 Reply <| (TimeSpan.Zero, None)
             else
                 let r0 = pfloat stream
                 match r0.Status with
                 | ReplyStatus.Ok ->
-                    let r1 = stream |> skipped (skipAnyOf partAliases)
+                    let r1 = stream |> (skipped (skipAnyOf partAliases) .>>? optional (skipChar '_'))
+
                     match r1.Result with
                     | "d" -> Reply <| (TimeSpan.FromDays r0.Result, Some 'd')
                     | "h" -> Reply <| (TimeSpan.FromHours r0.Result, Some 'h')
@@ -45,10 +49,9 @@ let private _pTimeSpanPart (partAliases: string) : Parser<(TimeSpan * char optio
                     | _ -> Reply (r1.Status, (TimeSpan.Zero, None), r1.Error)
                 | _ -> Reply (r0.Status, (TimeSpan.Zero, None), r0.Error)
 
-
 let pTimeSpan : Parser<TimeSpan, unit> =        
     fun stream ->
-        let r0 = eof stream
+        let r0 = endOfExprContent stream
 
         if r0.Status = ReplyStatus.Ok then
             Reply (r0.Status, r0.Error)
@@ -60,6 +63,8 @@ let pTimeSpan : Parser<TimeSpan, unit> =
             while currentPartState.IsSome do
                 let r = stream |> _pTimeSpanPart remainingParts
                 let (value, partAlias) = r.Result
+                currentPartState <- partAlias
+
                 match (partAlias, r.Status, value) with
                 | (None, ReplyStatus.Ok, _) -> ()
                 | (None, _, _) -> 
@@ -81,16 +86,18 @@ let pTimeSpan : Parser<TimeSpan, unit> =
             reply
 
 
-let pGuid : Parser<Guid, unit> = 
-    let _pEmpty = pstring "Empty" >>% Guid.Empty
-    let _pNew = pstring "NewGuid" >>% Guid.NewGuid ()
+
+let pDateTime : Parser<DateTime, unit> =
+    let _pMinValue = pstring "MinValue" >>% DateTime.MinValue
+    let _pMaxValue = pstring "MaxValue" >>% DateTime.MaxValue
+    let _pNow = pstring "Now" >>% DateTime.Now
+    let _pUtcNow = pstring "UtcNow" >>% DateTime.UtcNow
     let _pValue = ( pstring "Parse" 
         >>. skipChar ' '
         >>. manyCharsTill anyChar eof 
         |>> Guid.Parse )
 
-    skipString "Guid." >>. choice [ _pEmpty; _pNew; _pValue ] 
+    skipString "DateTime." >>. choice [ _pMinValue; _pMaxValue; _pNow; _pUtcNow; ] 
 
 
-
-let pIdentifier : Parser<Expr, unit> = many1Chars (letter <|> digit) |>> Expr.Identifer
+let pIdentifierExpr : Parser<Expr, unit> = many1Chars (letter <|> digit) |>> Expr.Identifer
