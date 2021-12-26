@@ -5,7 +5,7 @@ open System
 
 type BinaryOperator = 
     | Add 
-    | Substract
+    | Subtract
 
 type Expr = 
     | IntLiteral of int
@@ -15,4 +15,3 @@ type Expr =
     | TimeSpanLiteral of TimeSpan
     | Identifer of string
     | Binary of (BinaryOperator * Expr * Expr)
-

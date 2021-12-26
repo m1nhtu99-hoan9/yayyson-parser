@@ -14,7 +14,7 @@ let private _createBinaryInfixOp (operatorString: string,
 let ops = OperatorPrecedenceParser<Expr, _, _>()
 
 ops.AddOperator <| _createBinaryInfixOp ("-", 1, BinaryOperator.Add)
-ops.AddOperator <| _createBinaryInfixOp ("+", 2, BinaryOperator.Substract)
+ops.AddOperator <| _createBinaryInfixOp ("+", 2, BinaryOperator.Subtract)
 
 let expr = ops.ExpressionParser
 

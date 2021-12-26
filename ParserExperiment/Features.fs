@@ -17,3 +17,9 @@ let ParseToTimeSpan (str: string) =
     | ParserResult.Success (timeSpan, _, _) -> Result.Ok timeSpan
     | ParserResult.Failure (msg, _, _) -> Result.Error msg
 
+
+let ParseAndUnpackToGuid (str: string) = 
+    raise <| new NotImplementedException ()
+
+let ParseAndUnpackToTimeSpan (str: string) =
+    raise <| new NotImplementedException ()
