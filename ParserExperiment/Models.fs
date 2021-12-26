@@ -3,7 +3,6 @@
 open System
 
 
-
 type BinaryOperator = 
     | Add 
     | Substract
