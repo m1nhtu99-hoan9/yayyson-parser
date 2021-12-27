@@ -12,23 +12,28 @@ let internal createExprParser<'TResult> (pExprContent: Parser<'TResult, unit>) =
 let internal runExprParser<'TResult> (pExprContent: Parser<'TResult, unit>) (streamName: string) (str: string) = 
     runParserOnString (createExprParser pExprContent) () streamName str
 
-let internal endOfExprContent = followedBy <| pchar '}' <|> eof    
+let internal endOfExprContent = followedBy <| pchar '}'
+     
 
 
 let pGuid : Parser<Guid, unit> = 
     let _pEmpty = pstring "Empty" >>% Guid.Empty
     let _pNew = pstring "NewGuid" >>% Guid.NewGuid ()
-    let _pValue = ( pstring "Parse" 
+    let _pValue = ( 
+        pstring "Parse" 
         >>. skipChar ' '
-        >>. manyCharsTill anyChar endOfExprContent
-        |>> Guid.Parse )
+        >>. many (hex <|> pchar '-')
+        |>> fun xs -> String.Join (String.Empty, xs)
+        |>> Guid.Parse 
+    )
 
     skipString "Guid." >>. choice [ _pEmpty; _pNew; _pValue ] 
 
 
 let private _pTimeSpanPart (partAliases: string) : Parser<(TimeSpan * char option), unit> = 
     let inline createPChar (character : char) pChar = 
-        if partAliases.Contains character then pChar 
+        if partAliases.Contains character
+        then pChar 
         else fail $"'{char}' is not in '{partAliases}'."
 
     let pEmpty = endOfExprContent >>% (TimeSpan.Zero, None)
@@ -97,11 +102,7 @@ let pDateTime : Parser<DateTime, unit> =
     let _pMaxValue = pstring "MaxValue" >>% DateTime.MaxValue
     let _pNow = pstring "Now" >>% DateTime.Now
     let _pUtcNow = pstring "UtcNow" >>% DateTime.UtcNow
-    let _pValue = ( pstring "Parse" 
-        >>. skipChar ' '
-        >>. manyCharsTill anyChar eof 
-        |>> Guid.Parse )
-
+    
     skipString "DateTime." >>. choice [ _pMinValue; _pMaxValue; _pNow; _pUtcNow; ] 
 
 
@@ -109,22 +110,28 @@ let pIdentifierExpr : Parser<Expr, unit> = many1Chars (letter <|> digit) |>> Exp
 
 
 let pFullExpr : Parser<Expr, unit> = 
-    let _createBinaryInfixOp (operatorString: string, 
-                              precedence: int, 
-                              operator: BinaryOperator) : InfixOperator<Expr, unit, unit> =
+    let pDateTimeLiteral = pDateTime .>> optional spaces |>> Expr.DateTimeLiteral
+    let pTimeSpanLiteral = pTimeSpan .>> optional spaces |>> Expr.TimeSpanLiteral
+    let pGuidLiteral = pGuid .>> optional spaces |>> Expr.GuidLiteral
+    let pFloatLiteral = pfloat .>> optional spaces |>> Expr.FloatLiteral
+    let pIntLiteral = pint32 .>> optional spaces |>> Expr.IntLiteral
+
+    let inline createBinaryInfixOp (operatorString: string, 
+                                    precedence: int, 
+                                    operator: BinaryOperator) : InfixOperator<Expr, unit, unit> =
         InfixOperator (operatorString, spaces, precedence, Associativity.Left, fun x y -> Expr.Binary (operator, x, y))
 
     let ops = OperatorPrecedenceParser<Expr, _, _>()
 
-    ops.AddOperator <| _createBinaryInfixOp ("-", 1, BinaryOperator.Add)
-    ops.AddOperator <| _createBinaryInfixOp ("+", 2, BinaryOperator.Subtract)
+    ops.AddOperator <| createBinaryInfixOp ("+", 1, BinaryOperator.Add)
+    ops.AddOperator <| createBinaryInfixOp ("-", 2, BinaryOperator.Subtract)
 
     ops.TermParser <- choice [
-        pDateTime .>> optional spaces |>> Expr.DateTimeLiteral
-        pTimeSpan .>> optional spaces |>> Expr.TimeSpanLiteral
-        pGuid .>> optional spaces |>> Expr.GuidLiteral
-        pfloat .>> optional spaces |>> Expr.FloatLiteral
-        pint32 .>> optional spaces |>> Expr.IntLiteral
+        attempt pTimeSpanLiteral
+        attempt pDateTimeLiteral 
+        attempt pGuidLiteral 
+        attempt pIntLiteral
+        pFloatLiteral
     ]
 
     createExprParser ops.ExpressionParser
