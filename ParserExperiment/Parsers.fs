@@ -5,6 +5,7 @@ open FParsec
 
 open Models
 
+
 let internal createExprParser<'TResult> (pExprContent: Parser<'TResult, unit>) = 
     between (skipString "${") (skipChar '}') pExprContent
 
@@ -26,28 +27,25 @@ let pGuid : Parser<Guid, unit> =
 
 
 let private _pTimeSpanPart (partAliases: string) : Parser<(TimeSpan * char option), unit> = 
-    fun stream -> 
-        if String.IsNullOrWhiteSpace partAliases then
-            let r0 = stream |> endOfExprContent           
-            match r0.Status with
-            | ReplyStatus.Ok -> Reply <| (TimeSpan.Zero, None)
-            | _ -> Reply (r0.Status, (TimeSpan.Zero, None), r0.Error)
-        else
-            if (stream |> endOfExprContent).Status = ReplyStatus.Ok then
-                Reply <| (TimeSpan.Zero, None)
-            else
-                let r0 = pfloat stream
-                match r0.Status with
-                | ReplyStatus.Ok ->
-                    let r1 = stream |> (skipped (skipAnyOf partAliases) .>>? optional (skipChar '_'))
+    let inline createPChar (character : char) pChar = 
+        if partAliases.Contains character then pChar 
+        else fail $"'{char}' is not in '{partAliases}'."
 
-                    match r1.Result with
-                    | "d" -> Reply <| (TimeSpan.FromDays r0.Result, Some 'd')
-                    | "h" -> Reply <| (TimeSpan.FromHours r0.Result, Some 'h')
-                    | "m" -> Reply <| (TimeSpan.FromMinutes r0.Result, Some 'm')
-                    | "s" -> Reply <| (TimeSpan.FromSeconds r0.Result, Some 's')
-                    | _ -> Reply (r1.Status, (TimeSpan.Zero, None), r1.Error)
-                | _ -> Reply (r0.Status, (TimeSpan.Zero, None), r0.Error)
+    let pEmpty = endOfExprContent >>% (TimeSpan.Zero, None)
+
+    if String.IsNullOrWhiteSpace partAliases then
+        pEmpty
+    else 
+        pEmpty <|> (
+            pfloat >>= fun fl -> 
+                choice [
+                    pchar 'd' >>% (TimeSpan.FromDays fl, Some 'd') |> createPChar 'd'
+                    pchar 'h' >>% (TimeSpan.FromHours fl, Some 'h') |> createPChar 'h'
+                    pchar 'm' >>% (TimeSpan.FromMinutes fl, Some 'm') |> createPChar 'm'
+                    pchar 's' >>% (TimeSpan.FromSeconds fl, Some 's') |> createPChar 's'
+                ] 
+                .>> optional (skipChar '_')
+        )
 
 let pTimeSpan : Parser<TimeSpan, unit> =        
     fun stream ->
@@ -62,26 +60,33 @@ let pTimeSpan : Parser<TimeSpan, unit> =
 
             while currentPartState.IsSome do
                 let r = stream |> _pTimeSpanPart remainingParts
-                let (value, partAlias) = r.Result
-                currentPartState <- partAlias
-
-                match (partAlias, r.Status, value) with
-                | (None, ReplyStatus.Ok, _) -> ()
-                | (None, _, _) -> 
+                
+                match r.Status with 
+                | ReplyStatus.Ok -> 
+                    match r.Result with
+                    | (d, Some 'd') ->
+                        currentPartState <- Some 'd'
+                        remainingParts <- "hms"
+                        reply.Result <- reply.Result.Add d
+                    | (h, Some 'h') ->
+                        currentPartState <- Some 'h'
+                        remainingParts <- "ms"
+                        reply.Result <- reply.Result.Add h
+                    | (m, Some 'm') ->
+                        currentPartState <- Some 'm'
+                        remainingParts <- "s"
+                        reply.Result <- reply.Result.Add m
+                    | (s, Some 's') ->
+                        currentPartState <- Some 's'
+                        remainingParts <- String.Empty
+                        reply.Result <- reply.Result.Add s
+                    | (v, None) -> 
+                        currentPartState <- None
+                        reply.Error <- r.Error
+                    | _ -> raise <| new InvalidOperationException "Unreachable parser result state"
+                | _ -> 
+                    currentPartState <- None
                     reply <- Reply (r.Status, r.Error)
-                | (Some 'd', _, d) ->
-                    remainingParts <- "hms"
-                    reply.Result <- reply.Result.Add d
-                | (Some 'h', _, h) ->
-                    remainingParts <- "ms"
-                    reply.Result <- reply.Result.Add h
-                | (Some 'm', _, m) ->
-                    remainingParts <- "s"
-                    reply.Result <- reply.Result.Add m
-                | (Some 's', _, s) ->
-                    remainingParts <- String.Empty
-                    reply.Result <- reply.Result.Add s
-                | _ -> ()
 
             reply
 
@@ -101,3 +106,25 @@ let pDateTime : Parser<DateTime, unit> =
 
 
 let pIdentifierExpr : Parser<Expr, unit> = many1Chars (letter <|> digit) |>> Expr.Identifer
+
+
+let pFullExpr : Parser<Expr, unit> = 
+    let _createBinaryInfixOp (operatorString: string, 
+                              precedence: int, 
+                              operator: BinaryOperator) : InfixOperator<Expr, unit, unit> =
+        InfixOperator (operatorString, spaces, precedence, Associativity.Left, fun x y -> Expr.Binary (operator, x, y))
+
+    let ops = OperatorPrecedenceParser<Expr, _, _>()
+
+    ops.AddOperator <| _createBinaryInfixOp ("-", 1, BinaryOperator.Add)
+    ops.AddOperator <| _createBinaryInfixOp ("+", 2, BinaryOperator.Subtract)
+
+    ops.TermParser <- choice [
+        pDateTime .>> optional spaces |>> Expr.DateTimeLiteral
+        pTimeSpan .>> optional spaces |>> Expr.TimeSpanLiteral
+        pGuid .>> optional spaces |>> Expr.GuidLiteral
+        pfloat .>> optional spaces |>> Expr.FloatLiteral
+        pint32 .>> optional spaces |>> Expr.IntLiteral
+    ]
+
+    createExprParser ops.ExpressionParser

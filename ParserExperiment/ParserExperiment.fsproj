@@ -10,7 +10,6 @@
     <Compile Include="Models.fs" />
     <Compile Include="Parsers.fsi" />
     <Compile Include="Parsers.fs" />
-    <Compile Include="Operators.fs" />
     <Compile Include="Evaluation.fsi" />
     <Compile Include="Evaluation.fsi" /> 
     <Compile Include="Evaluation.fs" />
@@ -21,7 +20,7 @@
 
   <ItemGroup>
     <None Include="README.md" />
-    <Content Include="sample.json" />
+    <None Include="sample.json" />
   </ItemGroup>
 
   <ItemGroup>

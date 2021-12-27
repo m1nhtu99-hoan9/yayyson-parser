@@ -5,7 +5,7 @@ open FParsec
 
 open Models
 
-
+val pFullExpr: Parser<Expr, unit>
 val pTimeSpan: Parser<TimeSpan, unit>
 val pDateTime: Parser<DateTime, unit>
 val pGuid: Parser<Guid, unit>
