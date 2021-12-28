@@ -3,15 +3,26 @@
 open System
 
 
+type IOperator = interface end
+type ILiteral = interface end 
+
+
 type BinaryOperator = 
     | Add 
     | Subtract
+    interface IOperator
 
-type Expr = 
-    | IntLiteral of int
+type NumericLiteral = 
+    | IntLiteral of int32
     | FloatLiteral of float
+    interface ILiteral
+
+type StructLiteral = 
     | GuidLiteral of Guid
     | DateTimeLiteral of DateTime
     | TimeSpanLiteral of TimeSpan
-    | Identifer of string
+    interface ILiteral
+
+type Expr = 
     | Binary of (BinaryOperator * Expr * Expr)
+    | Literal of ILiteral 

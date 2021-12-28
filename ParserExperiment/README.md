@@ -3,7 +3,7 @@
 ## Miscellaneous
 
 ```fsharp
-Expr.DateTimeLiteral <| new DateTime (2021, 12, 25)
-// is identical to
-Expr.DateTimeLiteral (new DateTime (2021, 12, 25))
+#r "FParsec.dll"; #r "FParsecCS.dll"; #r "ParserExperiment.dll";;
+open System; open FParsec; open ParserExperiments.Parsers;;
+run pFullExpr "${3h8s+ 2.0}";;
 ```

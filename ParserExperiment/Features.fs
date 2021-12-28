@@ -1,25 +1,42 @@
-﻿module ParserExperiments.Features
+﻿[<AutoOpen>]
+module ParserExperiments.Features
 
 open System
 open FParsec 
 
-open ParserExperiments.Parsers
+open Parsers
+open Evaluation
 
 
-let ParseToGuid (str: string) = 
-    match runExprParser pGuid "GUID expression" str with 
-    | ParserResult.Success (guid, _, _) -> Result.Ok guid   
-    | ParserResult.Failure (msg, _, _) -> Result.Error msg 
-
-
-let ParseToTimeSpan (str: string) = 
-    match runExprParser pTimeSpan "TimeSpan expression" str with
-    | ParserResult.Success (timeSpan, _, _) -> Result.Ok timeSpan
+let private _parseAndCast<'TResult> (str: string) = 
+    match runParserOnString pFullExpr () "Yayyson expression" str with
+    | ParserResult.Success (v, _, _) -> 
+        let v' = unpack v
+        try
+            Result.Ok (v' :?> 'TResult)
+        with
+            | :? InvalidCastException -> 
+                Result.Error $"Given expression not evaluated to {typeof<'TResult>.FullName}, but {v.GetType().FullName}"
     | ParserResult.Failure (msg, _, _) -> Result.Error msg
 
 
-let ParseAndUnpackToGuid (str: string) = 
-    raise <| new NotImplementedException ()
+let private _parseSingularExpr<'TResult> (p: Parser<'TResult, unit>) (str: string) = 
+    match runExprParser p $"Yayyson {typeof<'TResult>.Name} expression" str with 
+    | ParserResult.Success (v, _, _) -> Result.Ok v   
+    | ParserResult.Failure (msg, _, _) -> Result.Error msg 
 
-let ParseAndUnpackToTimeSpan (str: string) =
-    raise <| new NotImplementedException ()
+
+let ParseToGuid (str: string) = _parseSingularExpr pGuid str
+
+let ParseToTimeSpan (str: string) = _parseSingularExpr pTimeSpan str
+
+
+let ParseAndCastToGuid (str: string) = _parseAndCast<Guid> str
+
+let ParseAndCastToTimeSpan (str: string) = _parseAndCast<TimeSpan> str
+
+let ParseAndCastToDateTime (str: string) = _parseAndCast<DateTime> str
+
+let ParseAndCastToFloat (str: string) = _parseAndCast<float> str
+
+let ParseAndCastToInt32 (str: string) = _parseAndCast<int32> str
