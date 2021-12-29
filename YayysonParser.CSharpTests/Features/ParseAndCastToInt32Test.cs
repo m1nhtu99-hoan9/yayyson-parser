@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using static ParserExperiments.Features;
+using static YayysonParser.Features;
 
-namespace ParserExperiments.Tests.Features
+namespace YayysonParser.Tests.Features
 {
     public class ParseAndCastToInt32Test
     {
         [Theory]
-        [MemberData(nameof(ValidJsonExprs))]
+        [MemberData(nameof(ValidYayysonExprs))]
         public void ParseAndCastToInt32_GivenBinaryExpressionReducedToInt32_ReturnsAppropriateInt32(string expr, int expected)
         {
             var actualResult = ParseAndCastToInt32(expr);
@@ -19,7 +19,7 @@ namespace ParserExperiments.Tests.Features
         }
 
         [Theory]
-        [MemberData(nameof(InvalidJsonExprs))]
+        [MemberData(nameof(InvalidYayysonExprs))]
         public void ParseAndCastToInt32_GivenBinaryExpressionNotReducedToInt32_ReturnError(string expr, Exception expectedExn)
         {
             try
@@ -35,7 +35,7 @@ namespace ParserExperiments.Tests.Features
             }
         }
 
-        public static IEnumerable<object[]> ValidJsonExprs = new []
+        public static IEnumerable<object[]> ValidYayysonExprs = new []
         {
             ("1999", 1999),
             ("2030 + 2099", 2030 + 2099),
@@ -43,7 +43,7 @@ namespace ParserExperiments.Tests.Features
             ("3489 - 3298 + 1986", 3489 - 3298 + 1986)
         }.Select(x => new object[] { string.Format("${{{0}}}", x.Item1), x.Item2 }).AsEnumerable();
 
-        public static IEnumerable<object[]> InvalidJsonExprs = new ValueTuple<string, Exception>[]
+        public static IEnumerable<object[]> InvalidYayysonExprs = new ValueTuple<string, Exception>[]
         {
             ("221.75 + 38", new InvalidCastException()),
             ("18h58s + 7m", new InvalidCastException()),

@@ -1,4 +1,4 @@
-﻿module ParserExperiments.Parsers
+﻿module YayysonParser.Parsers
 
 open System
 open FParsec

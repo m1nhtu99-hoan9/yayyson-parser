@@ -1,13 +1,13 @@
 using System;
 using Xunit;
-using static ParserExperiments.Features;
+using static YayysonParser.Features;
 
-namespace ParserExperiments.Tests.Features
+namespace YayysonParser.Tests.Features
 {
     public class ParseToGuidTest
     {
         [Fact]
-        public void ParseToGuid_GivenNewGuidJsonExpr_ReturnNewGuid()
+        public void ParseToGuid_GivenNewGuidYayysonExpr_ReturnNewGuid()
         {
             var actualResult = ParseToGuid("${Guid.NewGuid}");
 

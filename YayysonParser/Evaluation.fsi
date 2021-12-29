@@ -1,4 +1,4 @@
-﻿module ParserExperiments.Evaluation
+﻿module YayysonParser.Evaluation
 
 open System
 

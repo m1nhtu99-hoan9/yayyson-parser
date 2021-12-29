@@ -1,4 +1,4 @@
-﻿module internal ParserExperiments.Internals
+﻿module internal YayysonParser.Internals
 
 open Microsoft.FSharp.Reflection
 

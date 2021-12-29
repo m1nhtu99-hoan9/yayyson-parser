@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>ParserExperiments</RootNamespace>
+    <RootNamespace>YayysonParser</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,12 +16,6 @@
     <Compile Include="Evaluation.fs" />
     <Compile Include="Features.fsi" />
     <Compile Include="Features.fs" />
-    <Compile Include="Program.fs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="README.md" />
-    <None Include="sample.json" />
   </ItemGroup>
 
   <ItemGroup>

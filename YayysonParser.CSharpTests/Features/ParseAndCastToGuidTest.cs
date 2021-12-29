@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using static ParserExperiments.Features;
+using static YayysonParser.Features;
 
-namespace ParserExperiments.Tests.Features
+namespace YayysonParser.Tests.Features
 {
     public class ParseAndCastToGuidTest
     {
         [Fact]
-        public void ParseAndCastToGuid_GivenNewGuidJsonExpr_ReturnNewGuid()
+        public void ParseAndCastToGuid_GivenNewGuidYayysonExpr_ReturnNewGuid()
         {
             var actualResult = ParseAndCastToGuid("${Guid.NewGuid}");
 
@@ -38,7 +38,7 @@ namespace ParserExperiments.Tests.Features
         }
 
         [Theory]
-        [MemberData(nameof(InvalidJsonExprs))]
+        [MemberData(nameof(InvalidYayysonExprs))]
         public void ParseAndCastToGuid_GivenBinaryExpressionNotReducedToDateTime_ReturnError(string expr, Exception expectedExn)
         {
             try
@@ -53,7 +53,7 @@ namespace ParserExperiments.Tests.Features
             }
         }
 
-        public static IEnumerable<object[]> InvalidJsonExprs = new ValueTuple<string, Exception>[]
+        public static IEnumerable<object[]> InvalidYayysonExprs = new ValueTuple<string, Exception>[]
         {
             ("Guid.NewGuid + DateTime.Now",
                 new NotImplementedException("Unsupported operation: Addition of GuidLiteral to DateTimeLiteral.")),

@@ -1,5 +1,5 @@
 ﻿[<AutoOpen>]
-module ParserExperiments.Features
+module YayysonParser.Features
 
 open System
 open FParsec 

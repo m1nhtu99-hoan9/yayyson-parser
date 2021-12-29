@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using static ParserExperiments.Features;
+using static YayysonParser.Features;
 
-namespace ParserExperiments.Tests.Features
+namespace YayysonParser.Tests.Features
 {
     public class ParseToTimeSpanTest
     {
         [Theory]
-        [MemberData(nameof(ValidJsonExprs))]
-        public void ParseToTimeSpan_GivenValidTimeSpanJsonExpr_ReturnValue(string expr, TimeSpan expected)
+        [MemberData(nameof(ValidYayysonExprs))]
+        public void ParseToTimeSpan_GivenValidTimeSpanYayysonExpr_ReturnValue(string expr, TimeSpan expected)
         {
             var actualResult = ParseToTimeSpan(expr);
 
@@ -19,8 +19,8 @@ namespace ParserExperiments.Tests.Features
         }
 
         [Theory]
-        [MemberData(nameof(InvalidJsonExprs))]
-        public void ParseToTimeSpan_GivenInvalidTimeSpanJsonExpr_DoesNotReturnValue(string expr)
+        [MemberData(nameof(InvalidYayysonExprs))]
+        public void ParseToTimeSpan_GivenInvalidTimeSpanYayysonExpr_DoesNotReturnValue(string expr)
         {
             var actualResult = ParseToTimeSpan(expr);
 
@@ -28,7 +28,7 @@ namespace ParserExperiments.Tests.Features
             Assert.NotNull(actualResult.ErrorValue);
         }
 
-        public static IEnumerable<object[]> ValidJsonExprs = new[]
+        public static IEnumerable<object[]> ValidYayysonExprs = new[]
         {
             ("0.0d0h0m0s", TimeSpan.Zero),
             ("89.9095d", TimeSpan.FromDays(89.9095)),
@@ -42,7 +42,7 @@ namespace ParserExperiments.Tests.Features
                 + TimeSpan.FromSeconds(99.05)),
         }.Select(x => new object[] { string.Format("${{{0}}}", x.Item1), x.Item2 }).AsEnumerable();
 
-        public static IEnumerable<object[]> InvalidJsonExprs = new[]
+        public static IEnumerable<object[]> InvalidYayysonExprs = new[]
         {
             "0.0h0d0m0s",  // Hours-part precedes Days-part
             "89,9095d",

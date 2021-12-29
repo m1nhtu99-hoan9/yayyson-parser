@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Xunit;
-using static ParserExperiments.Features;
+using static YayysonParser.Features;
 
-namespace ParserExperiments.Tests.Features
+namespace YayysonParser.Tests.Features
 {
     public class ParseAndCastToDateTimeTest
     {
@@ -46,7 +46,7 @@ namespace ParserExperiments.Tests.Features
         }
 
         [Theory]
-        [MemberData(nameof(ValidJsonExprs))]
+        [MemberData(nameof(ValidYayysonExprs))]
         public void ParseAndCastToDateTime_GivenBinaryExpressionReducedToDateTime_ReturnsAppropriateDateTime(string expr, DateTime expected)
         {
             var actualResult = ParseAndCastToDateTime(expr);
@@ -56,7 +56,7 @@ namespace ParserExperiments.Tests.Features
         }
 
         [Theory]
-        [MemberData(nameof(InvalidJsonExprs))]
+        [MemberData(nameof(InvalidYayysonExprs))]
         public void ParseAndCastToDateTime_GivenBinaryExpressionNotReducedToDateTime_ReturnError(string expr, Exception expectedExn)
         {
             try
@@ -71,7 +71,7 @@ namespace ParserExperiments.Tests.Features
             }
         }
 
-        public static IEnumerable<object[]> ValidJsonExprs = new[]
+        public static IEnumerable<object[]> ValidYayysonExprs = new[]
         {
             ("DateTime.MinValue + 89.9095d", DateTime.MinValue.Add(TimeSpan.FromDays(89.9095))),
             ("DateTime.Now + 30d_03h", DateTime.Now.Add(TimeSpan.FromDays(30) + TimeSpan.FromHours(3))),
@@ -82,7 +82,7 @@ namespace ParserExperiments.Tests.Features
                 + TimeSpan.FromSeconds(99.05))),
         }.Select(x => new object[] { string.Format("${{{0}}}", x.Item1), x.Item2 }).AsEnumerable();
 
-        public static IEnumerable<object[]> InvalidJsonExprs = new ValueTuple<string, Exception>[]
+        public static IEnumerable<object[]> InvalidYayysonExprs = new ValueTuple<string, Exception>[]
         {
             ("2.0 + 3", null),  
             ("DateTime.Now + 2.022", 

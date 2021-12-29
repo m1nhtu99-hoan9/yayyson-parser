@@ -1,4 +1,4 @@
-﻿module ParserExperiments.Models
+﻿module YayysonParser.Models
 
 open System
 
