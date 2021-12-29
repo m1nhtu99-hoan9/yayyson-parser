@@ -57,7 +57,7 @@ namespace ParserExperiments.Tests.Features
 
         [Theory]
         [MemberData(nameof(InvalidJsonExprs))]
-        public void ParseAndCastToDateTime_GivenBinaryExpressionNotReducedToDateTime_ReturnErrorMessage(string expr, Exception expectedExn)
+        public void ParseAndCastToDateTime_GivenBinaryExpressionNotReducedToDateTime_ReturnError(string expr, Exception expectedExn)
         {
             try
             {
@@ -69,7 +69,6 @@ namespace ParserExperiments.Tests.Features
                 Assert.Equal(expectedExn.GetType(), actualExn.GetType());
                 actualExn.Message.Should().BeEquivalentTo(expectedExn.Message);
             }
-
         }
 
         public static IEnumerable<object[]> ValidJsonExprs = new[]

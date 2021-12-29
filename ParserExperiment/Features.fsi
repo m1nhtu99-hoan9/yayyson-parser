@@ -1,5 +1,5 @@
-﻿module ParserExperiments.Features
-
+﻿[<AutoOpen>]
+module ParserExperiments.Features
 
 open System
 
@@ -10,5 +10,5 @@ val ParseToTimeSpan: string -> Result<TimeSpan, string>
 val ParseAndCastToDateTime: string -> Result<DateTime, string>
 val ParseAndCastToGuid: string -> Result<Guid, string>
 val ParseAndCastToTimeSpan: string -> Result<TimeSpan, string>
-val ParseAndCastToFloat: string -> Result<float, string>
-val ParseAndCastToInt32: string -> Result<int32, string>
+val ParseAndCastToFloat: string -> Result<float32, string>
+val ParseAndCastToInt32: string -> Result<int, string>

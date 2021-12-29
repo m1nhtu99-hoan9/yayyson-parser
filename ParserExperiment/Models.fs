@@ -13,8 +13,8 @@ type BinaryOperator =
     interface IOperator
 
 type NumericLiteral = 
-    | IntLiteral of int32
-    | FloatLiteral of float
+    | IntLiteral of int
+    | FloatLiteral of float32
     interface ILiteral
 
 type StructLiteral = 

@@ -11,12 +11,12 @@ open Evaluation
 let private _parseAndCast<'TResult> (str: string) = 
     match runParserOnString pFullExpr () "Yayyson expression" str with
     | ParserResult.Success (v, _, _) -> 
-        let v' = unpack v
+        let v0 = unpack v
         try
-            Result.Ok (v' :?> 'TResult)
+            Result.Ok (v0 :?> 'TResult)
         with
             | :? InvalidCastException -> 
-                Result.Error $"Given expression not evaluated to {typeof<'TResult>.FullName}, but {v.GetType().FullName}"
+                Result.Error $"Given expression not evaluated to {typeof<'TResult>.FullName}, but {v0.GetType().FullName}"
     | ParserResult.Failure (msg, _, _) -> Result.Error msg
 
 
@@ -37,6 +37,6 @@ let ParseAndCastToTimeSpan (str: string) = _parseAndCast<TimeSpan> str
 
 let ParseAndCastToDateTime (str: string) = _parseAndCast<DateTime> str
 
-let ParseAndCastToFloat (str: string) = _parseAndCast<float> str
+let ParseAndCastToFloat (str: string) = _parseAndCast<float32> str
 
-let ParseAndCastToInt32 (str: string) = _parseAndCast<int32> str
+let ParseAndCastToInt32 (str: string) = _parseAndCast<int> str

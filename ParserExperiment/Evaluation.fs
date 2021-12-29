@@ -7,10 +7,11 @@ open Internals
 
 
 let _evalAdd (expr1: Expr, expr2: Expr) : Expr =
-    let inline addIntToFloat (i: int) (fl: float) = (float i) + fl |> FloatLiteral
+    let inline addIntToFloat (i: int) (fl: float32) = (float32 i) + fl |> FloatLiteral
 
     let addStructToStruct (lit1: StructLiteral) (lit2: StructLiteral) = 
         match (lit1, lit2) with
+        | (TimeSpanLiteral x1, TimeSpanLiteral x2) -> x1 + x2   |> StructLiteral.TimeSpanLiteral :> ILiteral |> Expr.Literal
         | (DateTimeLiteral x1, TimeSpanLiteral x2) -> x1.Add x2 |> StructLiteral.DateTimeLiteral :> ILiteral |> Expr.Literal
         | (TimeSpanLiteral _, DateTimeLiteral _) -> 
             raise <| new InvalidOperationException "Invalid operation: Addition of TimeSpan to DateTime. Try swapping the operands?"
@@ -33,9 +34,11 @@ let _evalAdd (expr1: Expr, expr2: Expr) : Expr =
                         $"Unsupported operation: Addition of {getUnionCaseName v1} to {getUnionCaseName v2}."
     | _ -> raise <| new InvalidOperationException $"Argument(s) not reduced to normal form and not ready for addition."
 
+
 let _evalSubtract (expr1: Expr, expr2: Expr) : Expr =
     let subtractStructToStruct (litExpr1: StructLiteral) (litExpr2: StructLiteral) = 
         match (litExpr1, litExpr2) with
+        | (TimeSpanLiteral x1, TimeSpanLiteral x2) -> x1 - x2        |> TimeSpanLiteral :> ILiteral |> Expr.Literal
         | (DateTimeLiteral x1, TimeSpanLiteral x2) -> x1.Subtract x2 |> DateTimeLiteral :> ILiteral |> Expr.Literal
         | (TimeSpanLiteral _, DateTimeLiteral _) -> 
             raise <| new InvalidOperationException "Invalid operation: Subtraction of a TimeSpan to a DateTime. Try swapping the operands?"
@@ -46,8 +49,8 @@ let _evalSubtract (expr1: Expr, expr2: Expr) : Expr =
         match (numExpr1, numExpr2) with
         | (IntLiteral x1, IntLiteral x2) -> x1 - x2 |> IntLiteral :> ILiteral |> Literal
         | (FloatLiteral x1, FloatLiteral x2) -> x1 - x2 |> FloatLiteral :> ILiteral |> Literal
-        | (IntLiteral x1, FloatLiteral x2) -> (float x1) - x2 |> FloatLiteral :> ILiteral |> Literal
-        | (FloatLiteral x1, IntLiteral x2) -> x1 - (float x2) |> FloatLiteral :> ILiteral |> Literal
+        | (IntLiteral x1, FloatLiteral x2) -> (float32 x1) - x2 |> FloatLiteral :> ILiteral |> Literal
+        | (FloatLiteral x1, IntLiteral x2) -> x1 - (float32 x2) |> FloatLiteral :> ILiteral |> Literal
         
     match (expr1, expr2) with
     | (Literal l1, Literal l2) ->

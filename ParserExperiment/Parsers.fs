@@ -21,8 +21,8 @@ let internal pNumericExpr =
     numberLiteral options "numeric value" 
     |>> fun n -> 
             if n.IsInteger
-            then NumericLiteral.IntLiteral <| int n.String
-            else NumericLiteral.FloatLiteral <| float n.String
+            then NumericLiteral.IntLiteral <| int32 n.String
+            else NumericLiteral.FloatLiteral <| float32 n.String
     .>> skipMany (skipChar ' ')
 
 
