@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using Xunit.Sdk;
 using static YayysonParser.Features;
 
 namespace YayysonParser.Tests.Features
@@ -39,24 +40,23 @@ namespace YayysonParser.Tests.Features
 
         [Theory]
         [MemberData(nameof(InvalidYayysonExprs))]
-        public void ParseAndCastToGuid_GivenBinaryExpressionNotReducedToDateTime_ReturnError(string expr, Exception expectedExn)
+        public void ParseAndCastToGuid_GivenBinaryExpressionNotReducedToDateTime_ReturnError(string expr, string expectedMsg)
         {
             try
             {
                 var actualResult = ParseAndCastToGuid(expr);
                 Assert.True(actualResult.IsError);
+                Assert.Equal(expectedMsg, actualResult.ErrorValue);
             }
-            catch (Exception actualExn)
+            catch (Exception exn)
             {
-                Assert.Equal(expectedExn.GetType(), actualExn.GetType());
-                Assert.Equal(expectedExn.Message, actualExn.Message);
+                throw new XunitException($"Expected no exceptionn, but found: {exn}");
             }
         }
 
-        public static IEnumerable<object[]> InvalidYayysonExprs = new ValueTuple<string, Exception>[]
+        public static IEnumerable<object[]> InvalidYayysonExprs = new []
         {
-            ("Guid.NewGuid + DateTime.Now",
-                new NotImplementedException("Unsupported operation: Addition of GuidLiteral to DateTimeLiteral.")),
+            ("Guid.NewGuid + DateTime.Now","Unsupported operation: Addition of GuidLiteral to DateTimeLiteral."),
         }.Select(x => new object[] { string.Format("${{{0}}}", x.Item1), x.Item2 }).AsEnumerable();
     }
 }

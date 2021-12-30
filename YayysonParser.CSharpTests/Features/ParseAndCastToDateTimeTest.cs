@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Xunit;
+using Xunit.Sdk;
 using static YayysonParser.Features;
 
 namespace YayysonParser.Tests.Features
@@ -57,17 +58,18 @@ namespace YayysonParser.Tests.Features
 
         [Theory]
         [MemberData(nameof(InvalidYayysonExprs))]
-        public void ParseAndCastToDateTime_GivenBinaryExpressionNotReducedToDateTime_ReturnError(string expr, Exception expectedExn)
+        public void ParseAndCastToDateTime_GivenBinaryExpressionNotReducedToDateTime_ReturnError(string expr, string expectedMsg)
         {
             try
             {
                 var actualResult = ParseAndCastToDateTime(expr);
+
                 Assert.True(actualResult.IsError);
+                actualResult.ErrorValue.Should().Equals(expectedMsg);
             }
-            catch (Exception actualExn)
+            catch (Exception exn)
             {
-                Assert.Equal(expectedExn.GetType(), actualExn.GetType());
-                actualExn.Message.Should().BeEquivalentTo(expectedExn.Message);
+                throw new XunitException($"Expected no exception, but found: {exn}");
             }
         }
 
@@ -82,13 +84,11 @@ namespace YayysonParser.Tests.Features
                 + TimeSpan.FromSeconds(99.05))),
         }.Select(x => new object[] { string.Format("${{{0}}}", x.Item1), x.Item2 }).AsEnumerable();
 
-        public static IEnumerable<object[]> InvalidYayysonExprs = new ValueTuple<string, Exception>[]
+        public static IEnumerable<object[]> InvalidYayysonExprs = new[]
         {
-            ("2.0 + 3", null),  
-            ("DateTime.Now + 2.022", 
-                new NotImplementedException("Unsupported operation: Addition of DateTimeLiteral to FloatLiteral.")),
-            ("30d_03h + DateTime.UtcNow", 
-                new InvalidOperationException("Invalid operation: Addition of TimeSpan to DateTime. Try swapping the operands?")),
+            ("2.0 + 3", null),
+            ("DateTime.Now + 2.022", "Unsupported operation: Addition of DateTimeLiteral to FloatLiteral."),
+            ("30d_03h + DateTime.UtcNow", "Invalid operation: Addition of TimeSpan to DateTime. Try swapping the operands?"),
         }.Select(x => new object[] { string.Format("${{{0}}}", x.Item1), x.Item2 }).AsEnumerable();
     }
 }

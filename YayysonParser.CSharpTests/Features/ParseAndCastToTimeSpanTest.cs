@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using Xunit.Sdk;
 using static YayysonParser.Features;
 
 namespace YayysonParser.Tests.Features
@@ -20,21 +21,21 @@ namespace YayysonParser.Tests.Features
 
         [Theory]
         [MemberData(nameof(InvalidYayysonExprs))]
-        public void ParseAndCastToDateTime_GivenBinaryExpressionNotReducedToDateTime_ReturnError(string expr, Exception expectedExn)
+        public void ParseAndCastToDateTime_GivenBinaryExpressionNotReducedToDateTime_ReturnError(string expr, string expectedMsg)
         {
             try
             {
                 var actualResult = ParseAndCastToTimeSpan(expr);
                 Assert.True(actualResult.IsError);
+                Assert.Equal(expectedMsg, actualResult.ErrorValue);
             }
-            catch (Exception actualExn)
+            catch (Exception exn)
             {
-                Assert.Equal(expectedExn.GetType(), actualExn.GetType());
-                Assert.Equal(expectedExn.Message, actualExn.Message);
+                throw new XunitException($"Expected no exception, but found: {exn}");
             }
         }
 
-        public static IEnumerable<object[]> ValidYayysonExprs = new ValueTuple<string, TimeSpan>[]
+        public static IEnumerable<object[]> ValidYayysonExprs = new []
         {
             ("11d2m9s + 89.9095d", TimeSpan.FromDays(11) 
                 + TimeSpan.FromMinutes(2) + TimeSpan.FromSeconds(9) + TimeSpan.FromDays(89.9095)),
@@ -47,11 +48,10 @@ namespace YayysonParser.Tests.Features
                 - TimeSpan.FromSeconds(99.05)),
         }.Select(x => new object[] { string.Format("${{{0}}}", x.Item1), x.Item2 }).AsEnumerable();
 
-        public static IEnumerable<object[]> InvalidYayysonExprs = new ValueTuple<string, Exception>[]
+        public static IEnumerable<object[]> InvalidYayysonExprs = new []
         {
-            ("DateTime.MinValue + 3h33s", null),
-            ("30h_03m + DateTime.Now",
-                new InvalidOperationException("Invalid operation: Addition of TimeSpan to DateTime. Try swapping the operands?")),
+            ("DateTime.MinValue + 3h33s", "Given expression not evaluated to System.TimeSpan, but System.DateTime"),
+            ("30h_03m + DateTime.Now", "Invalid operation: Addition of TimeSpan to DateTime. Try swapping the operands?"),
         }.Select(x => new object[] { string.Format("${{{0}}}", x.Item1), x.Item2 }).AsEnumerable();
     }
 }

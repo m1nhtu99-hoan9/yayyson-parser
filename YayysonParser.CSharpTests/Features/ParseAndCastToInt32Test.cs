@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using Xunit.Sdk;
 using static YayysonParser.Features;
 
 namespace YayysonParser.Tests.Features
@@ -20,18 +21,18 @@ namespace YayysonParser.Tests.Features
 
         [Theory]
         [MemberData(nameof(InvalidYayysonExprs))]
-        public void ParseAndCastToInt32_GivenBinaryExpressionNotReducedToInt32_ReturnError(string expr, Exception expectedExn)
+        public void ParseAndCastToInt32_GivenBinaryExpressionNotReducedToInt32_ReturnError(string expr, string expectedMsg)
         {
             try
             {
                 var actualResult = ParseAndCastToInt32(expr);
 
                 Assert.True(actualResult.IsError);
+                Assert.Equal(expectedMsg, actualResult.ErrorValue);
             }
-            catch (Exception actualExn)
+            catch (Exception exn)
             {
-                Assert.Equal(expectedExn.GetType(), actualExn.GetType());
-                Assert.Equal(expectedExn.Message, actualExn.Message);
+                throw new XunitException($"Expected no exception, but found: {exn}");
             }
         }
 
@@ -43,11 +44,11 @@ namespace YayysonParser.Tests.Features
             ("3489 - 3298 + 1986", 3489 - 3298 + 1986)
         }.Select(x => new object[] { string.Format("${{{0}}}", x.Item1), x.Item2 }).AsEnumerable();
 
-        public static IEnumerable<object[]> InvalidYayysonExprs = new ValueTuple<string, Exception>[]
+        public static IEnumerable<object[]> InvalidYayysonExprs = new ValueTuple<string, string>[]
         {
-            ("221.75 + 38", new InvalidCastException()),
-            ("18h58s + 7m", new InvalidCastException()),
-            ("3h32m15s + 2", new NotImplementedException("Unsupported operation: Addition of TimeSpanLiteral to IntLiteral.")),
+            ("221.75 + 38", "Given expression not evaluated to System.Int32, but System.Single"),
+            ("18h58s + 7m", "Given expression not evaluated to System.Int32, but System.TimeSpan"),
+            ("3h32m15s + 2", "Unsupported operation: Addition of TimeSpanLiteral to IntLiteral."),
         }.Select(x => new object[] { string.Format("${{{0}}}", x.Item1), x.Item2 }).AsEnumerable();
     }
 }

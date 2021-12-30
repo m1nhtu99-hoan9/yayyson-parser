@@ -11,12 +11,20 @@ open Evaluation
 let private _parseAndCast<'TResult> (str: string) = 
     match runParserOnString pFullExpr () "Yayyson expression" str with
     | ParserResult.Success (v, _, _) -> 
-        let v0 = unpack v
+        let mutable v0 : obj = null
+            
         try
+            v0 <- unpack v
+
             Result.Ok (v0 :?> 'TResult)
         with
             | :? InvalidCastException -> 
-                Result.Error $"Given expression not evaluated to {typeof<'TResult>.FullName}, but {v0.GetType().FullName}"
+                Result.Error <| String.Format (
+                    "Given expression not evaluated to {0}, but {1}", 
+                    typeof<'TResult>.FullName, if v0 = null then "null" else v0.GetType().FullName)
+            | :? InvalidOperationException as exn -> Result.Error exn.Message 
+            | :? NotImplementedException as exn -> Result.Error exn.Message
+            | _ -> reraise ()
     | ParserResult.Failure (msg, _, _) -> Result.Error msg
 
 

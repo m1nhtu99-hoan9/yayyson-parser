@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Xunit;
+using Xunit.Sdk;
 using static YayysonParser.Features;
 
 namespace YayysonParser.Tests.Features
@@ -21,20 +22,21 @@ namespace YayysonParser.Tests.Features
 
         [Theory]
         [MemberData(nameof(InvalidYayysonExprs))]
-        public void ParseAndCastToFloat_GivenBinaryExpressionNotReducedToFloat_ReturnError(string expr, Exception expectedExn)
+        public void ParseAndCastToFloat_GivenBinaryExpressionNotReducedToFloat_ReturnError(string expr, string expectedMsg)
         {
             try
             {
                 var actualResult = ParseAndCastToFloat(expr);
 
                 Assert.True(actualResult.IsError);
+                Assert.Equal(expectedMsg, actualResult.ErrorValue);
             }
-            catch (Exception actualExn)
+            catch (Exception exn)
             {
-                Assert.Equal(expectedExn.GetType(), actualExn.GetType());
-                Assert.Equal(expectedExn.Message, actualExn.Message);
+                throw new XunitException($"Expected no exception, but found: {exn}");
             }
         }
+
 
         public static IEnumerable<object[]> ValidYayysonExprs = new[]
         {
@@ -43,12 +45,11 @@ namespace YayysonParser.Tests.Features
             ("2299 - 2088.88", 2299.0 - 2088.88),
         }.Select(x => new object[] { string.Format("${{{0}}}", x.Item1), x.Item2 }).AsEnumerable();
 
-        public static IEnumerable<object[]> InvalidYayysonExprs = new ValueTuple<string, Exception>[]
+        public static IEnumerable<object[]> InvalidYayysonExprs = new []
         {
-            ("3489 - 3298 + 1986", new InvalidCastException("Given expression not evaluated to System.Single, but System.Int32")),
-            ("DateTime.Now + 9h30m", new InvalidCastException()),
-            ("3h32m15s + 2.99", 
-                new NotImplementedException("Unsupported operation: Addition of TimeSpanLiteral to FloatLiteral.")),
+            ("3489 - 3298 + 1986", "Given expression not evaluated to System.Single, but System.Int32"),
+            ("DateTime.Now + 9h30m", "Given expression not evaluated to System.Single, but System.DateTime"),
+            ("3h32m15s + 2.99", "Unsupported operation: Addition of TimeSpanLiteral to FloatLiteral."),
         }.Select(x => new object[] { string.Format("${{{0}}}", x.Item1), x.Item2 }).AsEnumerable();
     }
 }
