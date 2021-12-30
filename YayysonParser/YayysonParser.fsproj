@@ -4,6 +4,11 @@
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>YayysonParser</RootNamespace>
+    <Version>0.1.0</Version>
+    <PackageLicenseFile>LICENCE.md</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/m1nhtu99-hoan9/yayyson-parser</RepositoryUrl>
+    <Authors>MinhTu Thomas Hoang</Authors>
+    <Copyright></Copyright>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +25,13 @@
 
   <ItemGroup>
     <PackageReference Include="FParsec" Version="1.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENCE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
