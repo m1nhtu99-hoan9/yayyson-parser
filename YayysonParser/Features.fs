@@ -29,7 +29,9 @@ let private _parseAndCast<'TResult> (str: string) =
 
 
 let private _parseSingularExpr<'TResult> (p: Parser<'TResult, unit>) (str: string) = 
-    match runExprParser p $"Yayyson {typeof<'TResult>.Name} expression" str with 
+    let label = String.Format ("Yayyson {0} expression", typeof<'TResult>.Name)
+
+    match runExprParser p label str with 
     | ParserResult.Success (v, _, _) -> Result.Ok v   
     | ParserResult.Failure (msg, _, _) -> Result.Error msg 
 

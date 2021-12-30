@@ -44,7 +44,7 @@ let private _createTimeSpanPartParser (allowedParts: string) : Parser<(TimeSpan 
     let inline interceptPChar (character : char) pChar = 
         if allowedParts.Contains character
         then pChar 
-        else fail $"'{char}' is not in '{allowedParts}'."
+        else fail <| String.Format ("'{0}' is not in '{1}'.", char, allowedParts)
 
     let pEmpty = endOfExprContent >>% (TimeSpan.Zero, None)
 

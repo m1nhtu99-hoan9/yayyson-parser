@@ -16,8 +16,9 @@ let _evalAdd (expr1: Expr, expr2: Expr) : Expr =
         | (TimeSpanLiteral _, DateTimeLiteral _) -> 
             raise <| new InvalidOperationException "Invalid operation: Addition of TimeSpan to DateTime. Try swapping the operands?"
         | (v1, v2) -> 
-            raise <| new NotImplementedException $"Unsupported operation: Addition of {getUnionCaseName v1} to {getUnionCaseName v2}."
-
+            raise <| new NotImplementedException (
+                String.Format ("Unsupported operation: Addition of {0} to {1}.", getUnionCaseName v1, getUnionCaseName v2))
+            
     let addNumToNum (numExpr1: NumericLiteral) (numExpr2: NumericLiteral) =
         match (numExpr1, numExpr2) with
         | (IntLiteral x1, IntLiteral x2) -> x1 + x2 |> IntLiteral :> ILiteral |> Expr.Literal
@@ -30,9 +31,9 @@ let _evalAdd (expr1: Expr, expr2: Expr) : Expr =
         match (l1, l2) with
         | ((:? StructLiteral as litExpr1), (:? StructLiteral as litExpr2)) -> addStructToStruct litExpr1 litExpr2
         | ((:? NumericLiteral as numExpr1), (:? NumericLiteral as numExpr2)) -> addNumToNum numExpr1 numExpr2
-        | (v1, v2) -> raise <| new NotImplementedException 
-                        $"Unsupported operation: Addition of {getUnionCaseName v1} to {getUnionCaseName v2}."
-    | _ -> raise <| new InvalidOperationException $"Argument(s) not reduced to normal form and not ready for addition."
+        | (v1, v2) -> raise <| new NotImplementedException (
+                        String.Format ("Unsupported operation: Addition of {0} to {1}.", getUnionCaseName v1, getUnionCaseName v2))
+    | _ -> raise <| new InvalidOperationException "Argument(s) not reduced to normal form and not ready for addition."
 
 
 let _evalSubtract (expr1: Expr, expr2: Expr) : Expr =
@@ -43,7 +44,7 @@ let _evalSubtract (expr1: Expr, expr2: Expr) : Expr =
         | (TimeSpanLiteral _, DateTimeLiteral _) -> 
             raise <| new InvalidOperationException "Invalid operation: Subtraction of a TimeSpan to a DateTime. Try swapping the operands?"
         | (v1, v2) -> 
-            raise <| new NotImplementedException $"Unsupported operation: Addition of {getUnionCaseName v1} to {getUnionCaseName v2}."
+            raise <| new NotImplementedException (String.Format ("Unsupported operation: Subtraction of {0} to {1}.", getUnionCaseName v1, getUnionCaseName v2))
 
     let subtractNumToNum (numExpr1: NumericLiteral) (numExpr2: NumericLiteral) = 
         match (numExpr1, numExpr2) with
@@ -57,10 +58,11 @@ let _evalSubtract (expr1: Expr, expr2: Expr) : Expr =
         match (l1, l2) with
         | ((:? StructLiteral as litExpr1), (:? StructLiteral as litExpr2)) -> subtractStructToStruct litExpr1 litExpr2
         | ((:? NumericLiteral as numExpr1), (:? NumericLiteral as numExpr2)) -> subtractNumToNum numExpr1 numExpr2
-        | (v1, v2) -> raise <| new NotImplementedException 
-                        $"Unsupported operation: Subtraction of {getUnionCaseName v1} to {getUnionCaseName v2}."    
+        | (v1, v2) -> raise <| new NotImplementedException (
+                        String.Format ("Unsupported operation: Subtraction of {0} to {1}.", getUnionCaseName v1, getUnionCaseName v2))  
     | (v1, v2) -> 
-        raise <| new NotImplementedException $"Unsupported operation: Subtraction of {getUnionCaseName v1} to {getUnionCaseName v2}."
+        raise <| new NotImplementedException (
+            String.Format ("Unsupported operation: Subtraction of {0} to {1}.", getUnionCaseName v1, getUnionCaseName v2))
 
 
 let rec eval (expr: Expr) =

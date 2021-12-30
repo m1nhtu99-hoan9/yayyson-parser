@@ -38,52 +38,52 @@ let demoParsingDateTime' = _demoParsing ParseAndCastToDateTime
 let main argv =
     let r = new Random ()
 
-    printfn $"YAYYSON PARSER DEMO\n"
+    printfn "YAYYSON PARSER DEMO\n"
 
-    printfn $"＼(^_^ ) GUID ＼(^_^ )\n"
+    printfn "＼(^_^ ) GUID ＼(^_^ )\n"
     demoParsingGuid "${Guid.NewGuid}"
     demoParsingGuid <| String.Format ("${{Guid.Parse {0}}}", Guid.NewGuid().ToString().ToUpperInvariant())
     demoParsingGuid "${Guid.Empty}"
     printfn "\n"
     
-    printfn $"＼(^_^ ) TimeSpan ＼(^_^ )\n"
+    printfn "＼(^_^ ) TimeSpan ＼(^_^ )\n"
     demoParsingTimeSpan <| String.Format (
         "${{{0}d_{1}h_{2}m{3}s}}", 
-        r.NextSingle 100f, r.NextSingle 24f, r.NextSingle 80f, r.NextSingle 100f)
+        r.NextSingle 100.0f, r.NextSingle 24.0f, r.NextSingle 80.0f, r.NextSingle 100.0f)
     demoParsingTimeSpan' <| String.Format (
         "${{{0}h + {1}d_{2}h}}", 
         r.Next 100, r.Next 100, r.Next 100)
     demoParsingTimeSpan' <| String.Format (
         "${{{0}d - {1}d_{2}h_{3}m{4}s}}",
-        r.NextSingle 100f, r.NextSingle 80f, r.NextSingle 24f, r.NextSingle 60f, r.NextSingle 60f)
+        r.NextSingle 100.0f, r.NextSingle 80.0f, r.NextSingle 24.0f, r.NextSingle 60.0f, r.NextSingle 60.0f)
     demoParsingTimeSpan' <| String.Format (
         "${{{0} + {1}d_{2}h_{3}m_{4}s}}",
-        r.NextSingle 1000f, r.NextSingle 80f, r.NextSingle 24f, r.NextSingle 60f, r.NextSingle 60f)
+        r.NextSingle 1000.0f, r.NextSingle 80.0f, r.NextSingle 24.0f, r.NextSingle 60.0f, r.NextSingle 60.0f)
     printfn "\n"
     
-    printfn $"＼(^_^ ) DateTime ＼(^_^ )\n"
+    printfn "＼(^_^ ) DateTime ＼(^_^ )\n"
     demoParsingDateTime' "${DateTime.MinValue}"
     demoParsingDateTime' "${DateTime.MaxValue}"
     demoParsingDateTime' "${DateTime.Now}"
     demoParsingDateTime' "${DateTime.UtcNow}"
-    demoParsingDateTime' <| String.Format ("${{DateTime.MinValue + {0}d}}", r.NextSingle 100f)
-    demoParsingDateTime' <| String.Format ("${{DateTime.Now - {0}d_{1}h}}", r.NextSingle 100f, r.NextSingle 24f)
+    demoParsingDateTime' <| String.Format ("${{DateTime.MinValue + {0}d}}", r.NextSingle 100.0f)
+    demoParsingDateTime' <| String.Format ("${{DateTime.Now - {0}d_{1}h}}", r.NextSingle 100.0f, r.NextSingle 24.0f)
     demoParsingDateTime' <| String.Format (
         "${{DateTime.UtcNow + {0}d_{1}h_{2}m_{3}s}}",
-        r.NextSingle 100f, r.NextSingle 24f, r.NextSingle 60f, r.NextSingle 60f)
-    demoParsingDateTime' <| String.Format ("${{DateTime.Now + {0}}}", r.NextSingle 20f)
-    demoParsingDateTime' <| String.Format ("${{{0}d{1}h + DateTime.UtcNow}}", r.NextSingle 30f, r.NextSingle 24f)
+        r.NextSingle 100.0f, r.NextSingle 24.0f, r.NextSingle 60.0f, r.NextSingle 60.0f)
+    demoParsingDateTime' <| String.Format ("${{DateTime.Now + {0}}}", r.NextSingle 20.0f)
+    demoParsingDateTime' <| String.Format ("${{{0}d{1}h + DateTime.UtcNow}}", r.NextSingle 30.0f, r.NextSingle 24.0f)
     printfn "\n"
     
-    printfn $"＼(^_^ ) Float32 ＼(^_^ )\n"
-    demoParsingFloat32' <| String.Format ("${{{0}}}", r.NextSingle 1000f)
-    demoParsingFloat32' <| String.Format ("${{{0} + {1}}}", r.NextSingle 1000f, r.Next 1000)
-    demoParsingFloat32' <| String.Format ("${{{0} - {1}}}", r.Next 1000, r.NextSingle 1000f)
-    demoParsingFloat32' <| String.Format ("${{{0} + {1}}}", r.NextSingle 1000f, r.NextSingle 1000f)
-    demoParsingFloat32' <| String.Format ("${{{0} - {1}}}", r.NextSingle 1000f, r.NextSingle 1000f)
+    printfn "＼(^_^ ) Float32 ＼(^_^ )\n"
+    demoParsingFloat32' <| String.Format ("${{{0}}}", r.NextSingle 1000.0f)
+    demoParsingFloat32' <| String.Format ("${{{0} + {1}}}", r.NextSingle 1000.0f, r.Next 1000)
+    demoParsingFloat32' <| String.Format ("${{{0} - {1}}}", r.Next 1000, r.NextSingle 1000.0f)
+    demoParsingFloat32' <| String.Format ("${{{0} + {1}}}", r.NextSingle 1000.0f, r.NextSingle 1000.0f)
+    demoParsingFloat32' <| String.Format ("${{{0} - {1}}}", r.NextSingle 1000.0f, r.NextSingle 1000.0f)
     printfn "\n"
     
-    printfn $"＼(^_^ ) Int32 ＼(^_^ )\n"
+    printfn "＼(^_^ ) Int32 ＼(^_^ )\n"
     demoParsingInt32' <| String.Format ("${{{0}}}", r.Next 1000)
     demoParsingInt32' <| String.Format ("${{{0} + {1}}}", r.Next 1000, r.Next 1000)
     demoParsingInt32' <| String.Format ("${{{0} - {1}}}", r.Next 1000, r.Next 1000)

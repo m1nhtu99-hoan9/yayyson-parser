@@ -1,7 +1,7 @@
 # Yayyson Parser
 
 ```
- [GUID]  
+[GUID]  
 "${Guid.NewGuid}" -> bb768ef2-cfdd-4980-a0a7-3c99b301f988
 "${Guid.Parse 60D703A0-839B-48DF-9EC3-8AA39F41840E}" -> 60d703a0-839b-48df-9ec3-8aa39f41840e
 "${Guid.Empty}" -> 00000000-0000-0000-0000-000000000000

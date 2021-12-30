@@ -13,14 +13,10 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-    - name: Setup DotNet Core SDK 5.0
-      uses: actions/setup-dotnet@v1.9.0
-      with:
-        dotnet-version: '5.0.x'
     - name: Setup DotNet Core SDK 3.1
       uses: actions/setup-dotnet@v1.9.0
       with:
-        dotnet-version: '3.1.x'
+        dotnet-version: '3.1.415'
     - uses: actions/cache@v2.1.7
       with:
         path: ~/.nuget/packages
@@ -28,6 +24,8 @@ jobs:
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
           ${{ runner.os }}-nuget
+    - name: List avaialble SDKs
+      run: dotnet --list-sdks
     - name: List available runtimes
       run: dotnet --list-runtimes
     - name: Restore dependencies
