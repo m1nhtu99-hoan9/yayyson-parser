@@ -84,3 +84,6 @@ FSharpResult<float, string> ParseAndCastToFloat(string str)
 ```csharp
 FSharpResult<int, string> ParseAndCastToInt32(string str)
 ```
+## Licence
+
+MIT licensed. (c) 2021 MinhTu Thomas Hoang 
