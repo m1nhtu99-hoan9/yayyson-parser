@@ -1,0 +1,42 @@
+name: 🐛 Bug Report
+description: Create a report to help us improve this project
+title: 'BUG: '
+body:
+  - type: checkboxes
+    attributes:
+      label: Prerequisites
+      description: Please ensure you have completed all of the following.
+      options:
+        - label: >-
+            I have searched for [existing
+            issues](https://github.com/m1nhtu99-hoan9/yayyson-parser/issues)
+            that already report this problem, without success.
+          required: true
+  - type: input
+    attributes:
+      label: Package version
+      description: Please specify which version of `YayysonParser` this issue impacts.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Current Behavior
+      description: A clear description of what the bug is and how it manifests.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: A clear description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to Reproduce
+      description: Please explain the steps required to duplicate this issue.
+  - type: textarea
+    attributes:
+      label: Additional Information
+      description: >-
+        List any other information that is relevant to your issue (your OS, OS
+        version, etc.).
