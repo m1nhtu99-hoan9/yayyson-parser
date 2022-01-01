@@ -11,7 +11,7 @@ namespace YayysonParser.Tests.Features
     {
         [Theory]
         [MemberData(nameof(ValidYayysonExprs))]
-        public void ParseAndCastToInt32_GivenBinaryExpressionReducedToInt32_ReturnsAppropriateInt32(string expr, int expected)
+        public void GivenBinaryExpressionReducedToInt32_ReturnsAppropriateInt32(string expr, int expected)
         {
             var actualResult = ParseAndCastToInt32(expr);
 
@@ -21,7 +21,7 @@ namespace YayysonParser.Tests.Features
 
         [Theory]
         [MemberData(nameof(InvalidYayysonExprs))]
-        public void ParseAndCastToInt32_GivenBinaryExpressionNotReducedToInt32_ReturnError(string expr, string expectedMsg)
+        public void GivenBinaryExpressionNotReducedToInt32_ReturnError(string expr, string expectedMsg)
         {
             try
             {

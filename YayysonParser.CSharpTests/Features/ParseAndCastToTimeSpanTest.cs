@@ -11,7 +11,7 @@ namespace YayysonParser.Tests.Features
     {
         [Theory]
         [MemberData(nameof(ValidYayysonExprs))]
-        public void ParseAndCastToDateTime_GivenBinaryExpressionReducedToDateTime_ReturnsAppropriateDateTime(string expr, TimeSpan expected)
+        public void GivenBinaryExpressionReducedToTimeSpan_ReturnsAppropriateDateTime(string expr, TimeSpan expected)
         {
             var actualResult = ParseAndCastToTimeSpan(expr);
 
@@ -21,11 +21,12 @@ namespace YayysonParser.Tests.Features
 
         [Theory]
         [MemberData(nameof(InvalidYayysonExprs))]
-        public void ParseAndCastToDateTime_GivenBinaryExpressionNotReducedToDateTime_ReturnError(string expr, string expectedMsg)
+        public void GivenBinaryExpressionNotReducedToTimeSpan_ReturnError(string expr, string expectedMsg)
         {
             try
             {
                 var actualResult = ParseAndCastToTimeSpan(expr);
+
                 Assert.True(actualResult.IsError);
                 Assert.Equal(expectedMsg, actualResult.ErrorValue);
             }

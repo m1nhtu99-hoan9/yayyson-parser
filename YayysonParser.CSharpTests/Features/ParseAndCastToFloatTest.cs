@@ -12,7 +12,7 @@ namespace YayysonParser.Tests.Features
     {
         [Theory]
         [MemberData(nameof(ValidYayysonExprs))]
-        public void ParseAndCastToFloat_GivenBinaryExpressionReducedToFloat_ReturnsAppropriateFloat(string expr, float expected)
+        public void GivenBinaryExpressionReducedToFloat_ReturnsAppropriateFloat(string expr, float expected)
         {
             var actualResult = ParseAndCastToFloat(expr);
 
@@ -22,7 +22,7 @@ namespace YayysonParser.Tests.Features
 
         [Theory]
         [MemberData(nameof(InvalidYayysonExprs))]
-        public void ParseAndCastToFloat_GivenBinaryExpressionNotReducedToFloat_ReturnError(string expr, string expectedMsg)
+        public void GivenBinaryExpressionNotReducedToFloat_ReturnError(string expr, string expectedMsg)
         {
             try
             {

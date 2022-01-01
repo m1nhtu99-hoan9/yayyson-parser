@@ -10,7 +10,7 @@ namespace YayysonParser.Tests.Features
     public class ParseAndCastToGuidTest
     {
         [Fact]
-        public void ParseAndCastToGuid_GivenNewGuidYayysonExpr_ReturnNewGuid()
+        public void GivenNewGuidYayysonExpr_ReturnNewGuid()
         {
             var actualResult = ParseAndCastToGuid("${Guid.NewGuid}");
 
@@ -19,7 +19,7 @@ namespace YayysonParser.Tests.Features
         }
 
         [Fact]
-        public void ParseAndCastToGuid_GivenEmptyGuidExpr_ReturnEmptyGuid()
+        public void GivenEmptyGuidExpr_ReturnEmptyGuid()
         {
             var actualResult = ParseAndCastToGuid("${Guid.Empty}");
 
@@ -28,7 +28,7 @@ namespace YayysonParser.Tests.Features
         }
 
         [Fact]
-        public void ParseAndCastToGuid_GivenGuidParseExpr_ReturnExpectedGuid()
+        public void GivenGuidParseExpr_ReturnExpectedGuid()
         {
             var expected = Guid.NewGuid();
             var guidExprString = string.Format("${{Guid.Parse {0}}}", expected.ToString("D"));
@@ -40,11 +40,12 @@ namespace YayysonParser.Tests.Features
 
         [Theory]
         [MemberData(nameof(InvalidYayysonExprs))]
-        public void ParseAndCastToGuid_GivenBinaryExpressionNotReducedToDateTime_ReturnError(string expr, string expectedMsg)
+        public void GivenBinaryExpressionNotReducedToDateTime_ReturnError(string expr, string expectedMsg)
         {
             try
             {
                 var actualResult = ParseAndCastToGuid(expr);
+
                 Assert.True(actualResult.IsError);
                 Assert.Equal(expectedMsg, actualResult.ErrorValue);
             }

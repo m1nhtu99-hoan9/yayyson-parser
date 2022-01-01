@@ -16,6 +16,7 @@ body:
     attributes:
       label: Package version
       description: Please specify which version of `YayysonParser` this issue impacts.
+      value: '0.1.0'
     validations:
       required: true
   - type: textarea

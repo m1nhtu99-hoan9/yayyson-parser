@@ -11,7 +11,7 @@ namespace YayysonParser.Tests.Features
     public class ParseAndCastToDateTimeTest
     {
         [Fact]
-        public void ParseAndCastToDateTime_GivenMinValueDateTimeExpression_ReturnsMinDateTime()
+        public void GivenMinValueDateTimeExpression_ReturnsMinDateTime()
         {
             var actualResult = ParseAndCastToDateTime("${DateTime.MinValue}");
 
@@ -20,7 +20,7 @@ namespace YayysonParser.Tests.Features
         }
 
         [Fact]
-        public void ParseAndCastToDateTime_GivenMaxValueDateTimeExpression_ReturnsMaxDateTime()
+        public void GivenMaxValueDateTimeExpression_ReturnsMaxDateTime()
         {
             var actualResult = ParseAndCastToDateTime("${DateTime.MaxValue}");
 
@@ -29,7 +29,7 @@ namespace YayysonParser.Tests.Features
         }
 
         [Fact]
-        public void ParseAndCastToDateTime_GivenNowDateTimeExpression_ReturnsCurrentDateTime()
+        public void GivenNowDateTimeExpression_ReturnsCurrentDateTime()
         {
             var actualResult = ParseAndCastToDateTime("${DateTime.Now}");
 
@@ -38,7 +38,7 @@ namespace YayysonParser.Tests.Features
         }
 
         [Fact]
-        public void ParseAndCastToDateTime_GivenUtcNowDateTimeExpression_ReturnsCurrentUtcDateTime()
+        public void GivenUtcNowDateTimeExpression_ReturnsCurrentUtcDateTime()
         {
             var actualResult = ParseAndCastToDateTime("${DateTime.UtcNow}");
 
@@ -48,7 +48,7 @@ namespace YayysonParser.Tests.Features
 
         [Theory]
         [MemberData(nameof(ValidYayysonExprs))]
-        public void ParseAndCastToDateTime_GivenBinaryExpressionReducedToDateTime_ReturnsAppropriateDateTime(string expr, DateTime expected)
+        public void GivenBinaryExpressionReducedToDateTime_ReturnsAppropriateDateTime(string expr, DateTime expected)
         {
             var actualResult = ParseAndCastToDateTime(expr);
 
@@ -58,7 +58,7 @@ namespace YayysonParser.Tests.Features
 
         [Theory]
         [MemberData(nameof(InvalidYayysonExprs))]
-        public void ParseAndCastToDateTime_GivenBinaryExpressionNotReducedToDateTime_ReturnError(string expr, string expectedMsg)
+        public void GivenBinaryExpressionNotReducedToDateTime_ReturnError(string expr, string expectedMsg)
         {
             try
             {

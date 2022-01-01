@@ -11,6 +11,26 @@ YAYYSON PARSER DEMO
 
 "${Guid.Empty}" -> 00000000-0000-0000-0000-000000000000
 
+"${Guid.Parse 0f6d602-4c86-4caf-96c6-199a8f342a9}" ->
+        Failed with message:
+                "Error in Yayyson Guid expression: Ln: 1 Col: 48
+                ${Guid.Parse 0f6d602-4c86-4caf-96c6-199a8f342a9}
+                                                               ^
+                Expecting: hexadecimal digit or '-'
+                Other error messages:
+                  Guid should contain 32 digits with 4 dashes
+                  (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
+                "
+
+"${Guid.Parse not-even-a-guid-literal}" ->
+        Failed with message:
+                "Error in Yayyson Guid expression: Ln: 1 Col: 14
+                ${Guid.Parse not-even-a-guid-literal}
+                             ^
+                Expecting: hexadecimal digit or '-'
+                Other error messages:
+                  Unrecognized Guid format.
+                "
 
 
 \(^_^ ) TimeSpan \(^_^ )
@@ -42,12 +62,13 @@ YAYYSON PARSER DEMO
 
 "${DateTime.UtcNow + 69.25352d_21.070854h_19.891806m_52.440514s}" -> 10/03/2022 9:31:44 AM
 
-"${DateTime.Now + 8.419537}" -> 
-	Failed: Unsupported operation: Addition of DateTimeLiteral to FloatLiteral.
+"${DateTime.Now + 16.17953}" ->
+        Failed with message:
+                "Unsupported operation: Addition of DateTimeLiteral to FloatLiteral."
 
-"${8.239782d7.77775h + DateTime.UtcNow}" -> 
-	Failed: Invalid operation: Addition of TimeSpan to DateTime. Try swapping the operands?
-
+"${20.729582d14.785912h + DateTime.UtcNow}" ->
+        Failed with message:
+                "Invalid operation: Addition of TimeSpan to DateTime. Try swapping the operands?"
 
 
 \(^_^ ) Float32 \(^_^ )

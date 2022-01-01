@@ -34,7 +34,12 @@ let pGuid : Parser<Guid, unit> =
         >>. skipChar ' '
         >>. many (hex <|> pchar '-')
         |>> fun xs -> String.Join (String.Empty, xs)
-        |>> Guid.Parse 
+        >>= fun xs -> 
+            try 
+                preturn <| Guid.Parse xs
+            with
+                | :? FormatException | :? ArgumentNullException as exn -> fail exn.Message
+                | _ -> reraise ()
     )
 
     skipString "Guid." >>. choice [ _pEmpty; _pNew; _pValue ] 
@@ -42,9 +47,8 @@ let pGuid : Parser<Guid, unit> =
 
 let private _createTimeSpanPartParser (allowedParts: string) : Parser<(TimeSpan * char option), unit> = 
     let inline interceptPChar (character : char) pChar = 
-        if allowedParts.Contains character
-        then pChar 
-        else fail <| String.Format ("'{0}' is not in '{1}'.", char, allowedParts)
+        // for error messages not to be aggregated if `pTimeSpan` fails
+        if allowedParts.Contains character then pChar else pzero
 
     let pEmpty = endOfExprContent >>% (TimeSpan.Zero, None)
 

@@ -12,8 +12,9 @@ type Random with
 
 let inline private _printInput content = printfn "\"%s\" -> " content
 let inline private _printOkValue content = printfn "\t%A\n" content 
-let inline private _printErrorMsg message = printfn "\tFailed: %s\n" message
-let inline private _printExn (exn: Exception) = printfn "\t Exception: [%s] %s" <| exn.GetType().Name <| exn.Message 
+let inline private _printErrorMsg (message: string) = 
+    printfn "\tFailed with message:\n\t\t\"%s\"\n" <| message.Replace ("\n", "\n\t\t")
+let inline private _printExn (exn: Exception) = printfn "\t Exception: [%s] \"%s\"" <| exn.GetType().Name <| exn.Message 
 
 let private _demoParsing<'TResult> (fn: string -> Result<'TResult, string>) (expr: string) =
     _printInput expr
@@ -44,6 +45,9 @@ let main argv =
     demoParsingGuid "${Guid.NewGuid}"
     demoParsingGuid <| String.Format ("${{Guid.Parse {0}}}", Guid.NewGuid().ToString().ToUpperInvariant())
     demoParsingGuid "${Guid.Empty}"
+    demoParsingGuid "${Guid.Parse 0f6d602-4c86-4caf-96c6-199a8f342a9}"
+    demoParsingGuid "${Guid.Parse not-even-a-guid-literal}"
+
     printfn "\n"
     
     printfn "＼(^_^ ) TimeSpan ＼(^_^ )\n"

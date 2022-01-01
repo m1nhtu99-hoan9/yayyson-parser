@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using Xunit.Sdk;
 using static YayysonParser.Features;
 
 namespace YayysonParser.Tests.Features
@@ -10,7 +11,7 @@ namespace YayysonParser.Tests.Features
     {
         [Theory]
         [MemberData(nameof(ValidYayysonExprs))]
-        public void ParseToTimeSpan_GivenValidTimeSpanYayysonExpr_ReturnValue(string expr, TimeSpan expected)
+        public void GivenValidTimeSpanYayysonExpr_ReturnValue(string expr, TimeSpan expected)
         {
             var actualResult = ParseToTimeSpan(expr);
 
@@ -20,12 +21,19 @@ namespace YayysonParser.Tests.Features
 
         [Theory]
         [MemberData(nameof(InvalidYayysonExprs))]
-        public void ParseToTimeSpan_GivenInvalidTimeSpanYayysonExpr_DoesNotReturnValue(string expr)
+        public void GivenInvalidTimeSpanYayysonExpr_DoesNotReturnValue(string expr, string expectedMsg)
         {
-            var actualResult = ParseToTimeSpan(expr);
+            try
+            {
+                var actualResult = ParseToTimeSpan(expr);
 
-            Assert.True(actualResult.IsError);
-            Assert.NotNull(actualResult.ErrorValue);
+                Assert.True(actualResult.IsError);
+                Assert.Contains(expectedMsg, actualResult.ErrorValue);
+            }
+            catch (Exception exn)
+            {
+                throw new XunitException($"Expecting no exception, but found: {exn}");
+            }
         }
 
         public static IEnumerable<object[]> ValidYayysonExprs = new[]
@@ -44,9 +52,9 @@ namespace YayysonParser.Tests.Features
 
         public static IEnumerable<object[]> InvalidYayysonExprs = new[]
         {
-            "0.0h0d0m0s",  // Hours-part precedes Days-part
-            "89,9095d",
-            "30d 03h",
-        }.Select(x => new object[] { string.Format("${{{0}}}", x) }).AsEnumerable();
+            ("0.5h0d7m9s", "Expecting: 'm' or 's'"),  // Hours-part precedes Days-part
+            ("30d 03h", "Expecting: '}'"),
+            ("89,9095d", "Expecting: 'd', 'h', 'm' or 's'"),
+        }.Select(x => new object[] { string.Format("${{{0}}}", x.Item1), x.Item2 }).AsEnumerable();
     }
 }
