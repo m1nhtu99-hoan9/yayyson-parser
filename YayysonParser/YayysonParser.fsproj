@@ -4,7 +4,7 @@
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>YayysonParser</RootNamespace>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <PackageLicenseFile>LICENCE.md</PackageLicenseFile>
     <RepositoryUrl>https://github.com/m1nhtu99-hoan9/yayyson-parser</RepositoryUrl>
     <Authors>MinhTu Thomas Hoang</Authors>
